@@ -211,6 +211,15 @@ select
     b.Price + c.Total ?? 0  // ここがポイント
 ```
 
+### COUNT(*)
+
+```cs
+items.Count(m => m.Price > 0)
+
+//レコードの存在チェックだけなら Any拡張メソッドでも可
+items.Any(m => m.Price > 0)
+```
+
 ### MAX値 + 1
 
 該当レコードが存在しない場合も考慮する。
