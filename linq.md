@@ -227,14 +227,14 @@ items.Any(m => m.Price > 0)
 ```cs
 // 拡張メソッド
 items.Select(m => m.Seq)
-    .DefaultIfEmpty(0) // ここがポイント
-    .Max() + 1;
+     .DefaultIfEmpty(0) // ここがポイント
+     .Max() + 1;
 
 // null許可型を使えばこんな風にもできる
 items.Max(m => (int?)m.Seq) ?? 0 + 1;
 ```
 
-### HAVING
+### HAVING 句
 
 ```cs
 // ラムダ式
@@ -245,21 +245,31 @@ select g.Key
 
 // 拡張メソッド
 items.GroupBy(m => m.Date)
-    .Where(g => g.Count() > 1)
-    .Select(g => g.Key)
+     .Where(g => g.Count() > 1)
+     .Select(g => g.Key)
 ```
 
 ## その他
 
 ### DataTable を使う
 
-.AsEnumerable() 拡張メソッドを使う。  
+.AsEnumerable拡張メソッドを使う。  
 .Fieldメソッドを使えば型変換も簡単にできる。  
 .Fieldメソッドで NULL許容型に変換すれば NULLの取り扱いも簡単
 
 ```cs
 DataTable dt;
 
+// ラムダ式
+from a in dt.AsEnumerable()
+group a by a.Field<DateTime?>("日付") into g
+select new {
+    Date = g.Key,
+    Count = g.Count(),
+    Total = g.Sum(m => m.Field<decimal>("金額"));
+}
+
+// 拡張メソッド
 dt.AsEnumerable()
   .GroupBy(m => m.Field<DateTime?>("日付"))
   .Select(g => new {
