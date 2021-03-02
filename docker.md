@@ -9,6 +9,19 @@ docker search mysql
 # ローカルイメージを一覧表示
 docker images
 
+# コンテナのポート番号を 80 を ホストのポート8080 にマップ
+docker run -d -p 8080:80 [イメージ名]
+
+# bash を実行
+docker exec -it [コンテナ識別子] /bin/bash
+
+# docker build -t [これから生成するイメージ名]:[タグ名] [Dockerfileの場所]
+# 例) これを実行すると /home/docker/sample/Dockerfile をもとに「sample:1.0」イメージが作成される
+docker build -t sample:1.0 /home/docker/sample
+
+# -f を付けると任意のDockerfile名が指定できる。
+docker build -t sample:1.0 -f Dockerfile.base /home/docker/sample
+
 # コンテナの一覧表示
 docker ps -a 
 
@@ -17,19 +30,25 @@ docker rm -f `docker ps -a -q`
 
 # ローカルのイメージを全削除
 docker rmi -f `docker images -q`
+
+# コンテナ内のファイルをホストにコピーする
+docker cp 3d41745d4c25:/home/sail/laravel-test/composer.phar ~/
 ```
 
 ## Docker Compose コマンド 
 
 ```sh
-# 管理コンテナをまとめて起動
+# 管理コンテナをまとめて起動(-d バックグラウンド実行)
 docker-compose up -d
 
 # 管理コンテナの動作一覧
 docker-compose ps
 
-# 指定したコンテナで bash を実行
+# 指定したサービス名で bash を実行
 docker-compose exec php bash
+
+# コンテナのログ表示(tail -f)
+docker-compose logs -f 
 
 # 管理コンテナをまとめて停止
 docker-compose stop
@@ -63,7 +82,7 @@ services:
     # 公開ポート(ホスト側:コンテナ側)
     ports:
       - "80:80"
-    # コンテナ間のリンク(リンク名:リンクするサービス名)
+    # コンテナ間のリンク(サービス名:エイリアス名)
     links:
       - "dbserver:mysql"
   # サービス名
